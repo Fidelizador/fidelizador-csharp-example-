@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Net;
 using Newtonsoft.Json;
 
-
 namespace FidelizadorApiClient
 {
     internal class JsonResponse
@@ -12,7 +11,7 @@ namespace FidelizadorApiClient
         public int list_id { get; set; }
         public bool status { get; set; }
         public bool error { get; set; }
-        public Dictionary<string,int> msg { get; set; }
+        public Dictionary<string,float> msg { get; set; }
     }
 
     class MainClass
@@ -22,8 +21,8 @@ namespace FidelizadorApiClient
             string slug = "release";
             string client_id = "1_36imbsbmujmsocc44w4ks44w0cwk40gkkws0wgoggw84sgco08";
             string client_secret = "56tshkyljzk88cg4wgo0ckwswg80c0wsowwgossw8kskkkc0w0";
-            string domain = "api.fidelizador.com";
-            bool https = true;
+            string domain = "api.fidelizador.local";
+            bool https = false;
 
             int campaign_id;
             string response;
@@ -51,6 +50,23 @@ namespace FidelizadorApiClient
              */
             response = Api.Request("POST", path, parameters);
             Entity = JsonConvert.DeserializeObject<JsonResponse>(response);
+            Console.WriteLine(response);
+
+            //Importar un archivo csv a una lista.
+            path = string.Format("/1.0/list/{0}/import.json", Entity.list_id.ToString()); //puede usar también .xml en vez de .json
+            string file_path = "/home/developer/100_suscribers.csv";
+            FidelizadorApiClient.CsvFile csv = new FidelizadorApiClient.CsvFile(file_path);
+            parameters = new NameValueCollection
+            {
+                {"file", csv.ToString()},
+                {"fields[FIRSTNAME]", "1"},
+                {"fields[EMAIL]", "2"},
+                {"ignorefirstline", "1"}
+            };
+
+            //debe espeficicar en el último parametro que keys de parameters son archivos CSV mediante un array de strings.
+            string[] files = { "file" };
+            response = Api.Request("POST", path, parameters, files);
             Console.WriteLine(response);
 
             //Crear una campaña
@@ -84,7 +100,7 @@ namespace FidelizadorApiClient
             {
                 response = Api.Request("POST", path, parameters);
                 Entity = JsonConvert.DeserializeObject<JsonResponse>(response);
-                campaign_id = Entity.msg["campaign_id"];
+                campaign_id = (int)Entity.msg["campaign_id"];
                 Console.WriteLine(response);
             }
             catch (WebException e)
