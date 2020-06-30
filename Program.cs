@@ -18,11 +18,11 @@ namespace FidelizadorApiClient
     {
         public static void Main(string[] args)
         {
-            string slug = "release";
-            string client_id = "1_36imbsbmujmsocc44w4ks44w0cwk40gkkws0wgoggw84sgco08";
-            string client_secret = "56tshkyljzk88cg4wgo0ckwswg80c0wsowwgossw8kskkkc0w0";
-            string domain = "api.fidelizador.local";
-            bool https = false;
+            string slug = "SLUG";
+            string client_id = "OAUTH_CLIENT_ID";
+            string client_secret = "OAUTH_CLIENT_SECRET";
+            string domain = "api.fidelizador.com";
+            bool https = true;
 
             int campaign_id;
             string response;
